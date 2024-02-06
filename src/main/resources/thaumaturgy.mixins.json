@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "cookie.thaumaturgy.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "EntityPlayerMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

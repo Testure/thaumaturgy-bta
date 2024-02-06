@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "thaumaturgy",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This mod aims to help new BTA modders.",
+  "name": "Thaumaturgy",
+  "description": "A demake and port of Thaumcraft 4.",
   "authors": [
     "Turnip Labs"
   ],
@@ -19,20 +19,26 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"turniplabs.examplemod.ExampleMod"
+			"cookie.thaumaturgy.Thaumaturgy"
     ],
 		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"cookie.thaumaturgy.Thaumaturgy"
 		],
 		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"cookie.thaumaturgy.Thaumaturgy"
+		],
+		"beforeClientStart": [
+			"cookie.thaumaturgy.Thaumaturgy"
+		],
+		"afterClientStart": [
+			"cookie.thaumaturgy.Thaumaturgy"
 		],
 		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
+			"cookie.thaumaturgy.recipe.ThaumRecipes"
 		]
 	},
   "mixins": [
-      "examplemod.mixins.json"
+		"thaumaturgy.mixins.json"
   ],
 
   "depends": {
