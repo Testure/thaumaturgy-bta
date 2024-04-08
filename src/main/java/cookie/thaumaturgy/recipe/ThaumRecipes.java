@@ -1,13 +1,8 @@
 package cookie.thaumaturgy.recipe;
 
 import cookie.thaumaturgy.item.ThaumItems;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.data.DataLoader;
 import net.minecraft.core.data.registry.Registries;
-import net.minecraft.core.data.registry.recipe.RecipeGroup;
 import net.minecraft.core.data.registry.recipe.RecipeNamespace;
-import net.minecraft.core.data.registry.recipe.RecipeSymbol;
-import net.minecraft.core.data.registry.recipe.entry.RecipeEntryCrafting;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import turniplabs.halplibe.helper.RecipeBuilder;
@@ -32,6 +27,8 @@ public class ThaumRecipes implements RecipeEntrypoint {
 
 	@Override
 	public void initNamespaces() {
-
+		RecipeNamespace namespace = new RecipeNamespace();
+		namespace.register("workbench", Registries.RECIPES.WORKBENCH);
+		Registries.RECIPES.register(MOD_ID, namespace);
 	}
 }
