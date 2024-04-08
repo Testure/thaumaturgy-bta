@@ -1,11 +1,9 @@
 package cookie.thaumaturgy.mixin;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.Thaumaturgy;
 import cookie.thaumaturgy.interfaces.IEntityManaCharge;
 import net.minecraft.core.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,11 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = EntityPlayer.class, remap = false)
 public abstract class EntityPlayerMixin implements IEntityManaCharge {
-	@Shadow
-	public abstract void addChatMessage(String s);
-
-	@Unique
-	private int debug;
 	@Unique
 	private int airMana = 0;
 	@Unique
@@ -119,19 +112,6 @@ public abstract class EntityPlayerMixin implements IEntityManaCharge {
 	@Override
 	public int thaumaturgy_bta$increaseChaos() {
 		return chaosMana++;
-	}
-
-	@Inject(method = "tick", at = @At("TAIL"))
-	private void thaumaturgy_logMana(CallbackInfo ci) {
-		if (debug++ >= 200) {
-			debug = 0;
-			if (airMana > 0) addChatMessage("Player Air: " + airMana);
-			if (earthMana > 0) addChatMessage("Player Earth: " + earthMana);
-			if (fireMana > 0) addChatMessage("Player Fire: " + fireMana);
-			if (waterMana > 0) addChatMessage("Player Water: " + waterMana);
-			if (orderMana > 0) addChatMessage("Player Order: " + orderMana);
-			if (chaosMana > 0) addChatMessage("Player Chaos: " + chaosMana);
-		}
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))

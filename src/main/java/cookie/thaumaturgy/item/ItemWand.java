@@ -23,10 +23,10 @@ public class ItemWand extends Item implements ICustomDescription, IItemManaCharg
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
+	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
 		if (world.getBlock(blockX, blockY, blockZ) == Block.bookshelfPlanksOak) {
-			world.playSoundAtEntity(entityplayer, "thaumaturgy.wand", 1.0F, 1.0F);
-			entityplayer.swingItem();
+			world.playSoundAtEntity(player, null, "thaumaturgy.wand", 1.0F, 1.0F);
+			player.swingItem();
 
 			// Spawn a 'Thaumaturgy and You' book at the bookshelf.
 			EntityItem item = new EntityItem(world, blockX, blockY, blockZ, new ItemStack(ThaumItems.THAUMATURGY_AND_YOU));
@@ -53,8 +53,8 @@ public class ItemWand extends Item implements ICustomDescription, IItemManaCharg
 
 		// Check if the node and player aren't null. If it passes, lower the node count and raise the player's mana.
 		TileEntityNode tileEntityNode = (TileEntityNode) world.getBlockTileEntity(blockX, blockY, blockZ);
-		IEntityManaCharge playerMana = (IEntityManaCharge) entityplayer;
-		if (tileEntityNode != null && entityplayer != null) {
+		IEntityManaCharge playerMana = (IEntityManaCharge) player;
+		if (tileEntityNode != null && player != null) {
 			if (tileEntityNode.isAir && tileEntityNode.airCount > 0) {
 				tileEntityNode.airCount--;
 				world.spawnParticle("bubble", blockX, blockY, blockZ, 0, 0, 0);
@@ -88,6 +88,19 @@ public class ItemWand extends Item implements ICustomDescription, IItemManaCharg
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
+		IEntityManaCharge playerMana = (IEntityManaCharge) player;
+		player.addChatMessage("Player air: " + playerMana.thaumaturgy_bta$getAir());
+		player.addChatMessage("Player earth: " + playerMana.thaumaturgy_bta$getEarth());
+		player.addChatMessage("Player fire: " + playerMana.thaumaturgy_bta$getFire());
+		player.addChatMessage("Player water: " + playerMana.thaumaturgy_bta$getWater());
+		player.addChatMessage("Player order: " + playerMana.thaumaturgy_bta$getOrder());
+		player.addChatMessage("Player chaos: " + playerMana.thaumaturgy_bta$getChaos());
+
+		return itemstack;
 	}
 
 	@Override

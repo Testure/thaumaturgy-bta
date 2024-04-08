@@ -11,6 +11,7 @@ public class ThaumItems {
 	public static Item WAND_CAP_IRON;
 	public static Item WAND_BASIC;
 	public static Item THAUMATURGY_AND_YOU;
+	public static Item THAUMIC_READER;
 
 	public static void initializeItems() {
 		WAND_CAP_IRON = ItemHelper.createItem(MOD_ID,
@@ -24,5 +25,9 @@ public class ThaumItems {
 		THAUMATURGY_AND_YOU = ItemHelper.createItem(MOD_ID,
 			new ItemBookThaumaturgy("book.thaum", baseID++),
 			"book_thaum.png");
+
+		THAUMIC_READER = ItemHelper.createItem(MOD_ID,
+			new ItemThaumicReader("thaumic_reader", baseID++),
+			"thaumic_reader.png");
 	}
 }

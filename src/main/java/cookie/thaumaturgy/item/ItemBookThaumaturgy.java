@@ -13,9 +13,10 @@ public class ItemBookThaumaturgy extends Item {
 		this.maxStackSize = 1;
 	}
 
+	// TODO - this
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer) {
-		Thaumaturgy.LOGGER.info(entityplayer.username + " opened a Thaumamage's book!");
+		Thaumaturgy.LOGGER.info("{} opened a Thaumamage's book!", entityplayer.username);
 		return itemstack;
 	}
 }
