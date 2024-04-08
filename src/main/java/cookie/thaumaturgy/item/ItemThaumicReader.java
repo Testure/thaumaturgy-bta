@@ -1,7 +1,7 @@
 package cookie.thaumaturgy.item;
 
+import cookie.thaumaturgy.api.AspectStack;
 import cookie.thaumaturgy.block.entity.TileEntityNode;
-import cookie.thaumaturgy.interfaces.IEntityManaCharge;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
@@ -22,12 +22,9 @@ public class ItemThaumicReader extends Item {
 			TileEntityNode tileEntityNode = (TileEntityNode) world.getBlockTileEntity(blockX, blockY, blockZ);
 
 			if (tileEntityNode != null && player != null) {
-				player.addChatMessage("Node air: " + tileEntityNode.airCount);
-				player.addChatMessage("Node earth: " + tileEntityNode.earthCount);
-				player.addChatMessage("Node fire: " + tileEntityNode.fireCount);
-				player.addChatMessage("Node water: " + tileEntityNode.waterCount);
-				player.addChatMessage("Node order: " + tileEntityNode.orderCount);
-				player.addChatMessage("Node chaos: " + tileEntityNode.chaosCount);
+				for (AspectStack stack : tileEntityNode.getAspects()) {
+					player.addChatMessage("Node " + stack.getAspect().getName() + ": " + stack.amount);
+				}
 			}
 
 			return true;
