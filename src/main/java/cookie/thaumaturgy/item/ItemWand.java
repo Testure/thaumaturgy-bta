@@ -113,7 +113,6 @@ public class ItemWand extends Item implements ICustomDescription, IAspectContain
 	@Override
 	public boolean onItemUse(ItemStack itemstack, EntityPlayer player, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
 		if (world.getBlock(blockX, blockY, blockZ) == Block.bookshelfPlanksOak) {
-			world.playSoundEffect(player, SoundCategory.ENTITY_SOUNDS, blockX, blockY, blockZ, "thaumaturgy.wand", 1.0F, 1.0F);
 			player.swingItem();
 
 			// Spawn a 'Thaumaturgy and You' book at the bookshelf.

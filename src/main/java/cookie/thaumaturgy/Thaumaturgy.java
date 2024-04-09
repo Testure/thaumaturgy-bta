@@ -40,9 +40,7 @@ public class Thaumaturgy implements ModInitializer, GameStartEntrypoint, ClientS
 
 	@Override
 	public void beforeClientStart() {
-		SoundHelper.Client.addSound(MOD_ID, "wand1.wav");
-		SoundHelper.Client.addSound(MOD_ID, "wand2.wav");
-		SoundHelper.Client.addSound(MOD_ID, "wand3.wav");
+
 	}
 
 	@Override
