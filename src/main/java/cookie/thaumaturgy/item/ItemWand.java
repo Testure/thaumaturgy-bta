@@ -1,11 +1,11 @@
 package cookie.thaumaturgy.item;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.Thaumaturgy;
+import cookie.thaumaturgy.api.Dunami;
 import cookie.thaumaturgy.api.Dunamis;
 import cookie.thaumaturgy.api.DunamisStack;
 import cookie.thaumaturgy.block.entity.TileEntityNode;
-import cookie.thaumaturgy.interfaces.IAspectContainer;
+import cookie.thaumaturgy.interfaces.IDunamisContainer;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
@@ -19,7 +19,7 @@ import sunsetsatellite.catalyst.core.util.ICustomDescription;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ItemWand extends Item implements ICustomDescription, IAspectContainer {
+public class ItemWand extends Item implements ICustomDescription, IDunamisContainer {
 	private final Map<Dunamis, Integer> aspects = new HashMap<>();
 
 	public ItemWand(String name, int id) {
@@ -29,9 +29,9 @@ public class ItemWand extends Item implements ICustomDescription, IAspectContain
 	}
 
 	@Override
-	public int addAspect(Dunamis dunamis, int amount, boolean simulate) {
-		if (!isAspectValid(dunamis)) return 0;
-		int current = getAspect(dunamis);
+	public int addDunamis(Dunamis dunamis, int amount, boolean simulate) {
+		if (!isDunamisValid(dunamis)) return 0;
+		int current = getDunamis(dunamis);
 		if (current < getCapacity()) {
 			int result = Math.min(current + amount, getCapacity());
 			int diff = result - (current + amount);
@@ -43,9 +43,9 @@ public class ItemWand extends Item implements ICustomDescription, IAspectContain
 	}
 
 	@Override
-	public int takeAspect(Dunamis dunamis, int amount, boolean simulate) {
-		if (!hasAspect(dunamis)) return 0;
-		int current = getAspect(dunamis);
+	public int takeDunamis(Dunamis dunamis, int amount, boolean simulate) {
+		if (!hasDunamis(dunamis)) return 0;
+		int current = getDunamis(dunamis);
 		if (current > 0) {
 			int result = Math.max(current - amount, 0);
 			int diff = result - (current - amount);
@@ -57,24 +57,24 @@ public class ItemWand extends Item implements ICustomDescription, IAspectContain
 	}
 
 	@Override
-	public boolean setAspect(Dunamis dunamis, int amount, boolean simulate) {
-		if (!isAspectValid(dunamis)) return false;
+	public boolean setDunamis(Dunamis dunamis, int amount, boolean simulate) {
+		if (!isDunamisValid(dunamis)) return false;
 		aspects.put(dunamis, Math.min(amount, getCapacity()));
 		return true;
 	}
 
 	@Override
-	public int getAspect(Dunamis dunamis) {
+	public int getDunamis(Dunamis dunamis) {
 		return aspects.get(dunamis) != null ? aspects.get(dunamis) : 0;
 	}
 
 	@Override
-	public boolean hasAspect(Dunamis dunamis) {
-		return getAspect(dunamis) > 0;
+	public boolean hasDunamis(Dunamis dunamis) {
+		return getDunamis(dunamis) > 0;
 	}
 
 	@Override
-	public DunamisStack[] getAspects() {
+	public DunamisStack[] getDunami() {
 		DunamisStack[] stacks = new DunamisStack[aspects.size()];
 		int i = 0;
 		for (Dunamis dunamis : aspects.keySet()) {
@@ -97,7 +97,7 @@ public class ItemWand extends Item implements ICustomDescription, IAspectContain
 		CompoundTag aspects = tag.getCompound("aspects");
 		for (Dunamis dunamis : Thaumaturgy.DUNAMI) {
 			if (aspects.containsKey(dunamis.getName())) {
-				setAspect(dunamis, aspects.getInteger(dunamis.getName()), false);
+				setDunamis(dunamis, aspects.getInteger(dunamis.getName()), false);
 			}
 		}
 	}
@@ -142,14 +142,14 @@ public class ItemWand extends Item implements ICustomDescription, IAspectContain
 		if (tileEntityNode != null && player != null) {
 			for (int i = 0; i < Thaumaturgy.DUNAMI.size(); i++) {
 				Dunamis dunamis = Thaumaturgy.DUNAMI.get(i);
-				if (tileEntityNode.hasAspect(dunamis)) {
+				if (tileEntityNode.hasDunamis(dunamis)) {
 					String particle = i < TileEntityNode.particles.length ? TileEntityNode.particles[i] : "flame";
 					world.spawnParticle(particle, blockX, blockY, blockZ, 0, 0, 0);
-					int taken = tileEntityNode.takeAspect(dunamis, 2, false);
+					int taken = tileEntityNode.takeDunamis(dunamis, 2, false);
 					if (taken > 0) {
-						int added = addAspect(dunamis, taken, false);
+						int added = addDunamis(dunamis, taken, false);
 						if (added != taken) {
-							tileEntityNode.addAspect(dunamis, taken - added, false);
+							tileEntityNode.addDunamis(dunamis, taken - added, false);
 						}
 					}
 				}

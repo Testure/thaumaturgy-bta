@@ -1,16 +1,16 @@
 package cookie.thaumaturgy.block.entity;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.Thaumaturgy;
+import cookie.thaumaturgy.api.Dunami;
 import cookie.thaumaturgy.api.Dunamis;
 import cookie.thaumaturgy.api.DunamisStack;
-import cookie.thaumaturgy.interfaces.IAspectContainer;
+import cookie.thaumaturgy.interfaces.IDunamisContainer;
 import net.minecraft.core.block.entity.TileEntity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TileEntityNode extends TileEntity implements IAspectContainer {
+public class TileEntityNode extends TileEntity implements IDunamisContainer {
 	private int regenRate;
 	private int particleRate;
 	private final Map<Dunamis, Integer> aspects = new HashMap<>();
@@ -24,9 +24,9 @@ public class TileEntityNode extends TileEntity implements IAspectContainer {
 	};
 
 	@Override
-	public int addAspect(Dunamis dunamis, int amount, boolean simulate) {
-		if (!isAspectValid(dunamis)) return 0;
-		int current = getAspect(dunamis);
+	public int addDunamis(Dunamis dunamis, int amount, boolean simulate) {
+		if (!isDunamisValid(dunamis)) return 0;
+		int current = getDunamis(dunamis);
 		if (current < getCapacity()) {
 			int result = Math.min(current + amount, getCapacity());
 			int diff = result - (current + amount);
@@ -38,9 +38,9 @@ public class TileEntityNode extends TileEntity implements IAspectContainer {
 	}
 
 	@Override
-	public int takeAspect(Dunamis dunamis, int amount, boolean simulate) {
-		if (!hasAspect(dunamis)) return 0;
-		int current = getAspect(dunamis);
+	public int takeDunamis(Dunamis dunamis, int amount, boolean simulate) {
+		if (!hasDunamis(dunamis)) return 0;
+		int current = getDunamis(dunamis);
 		if (current > 0) {
 			int result = Math.max(current - amount, 0);
 			int diff = result - (current - amount);
@@ -52,24 +52,24 @@ public class TileEntityNode extends TileEntity implements IAspectContainer {
 	}
 
 	@Override
-	public boolean setAspect(Dunamis dunamis, int amount, boolean simulate) {
-		if (!isAspectValid(dunamis)) return false;
+	public boolean setDunamis(Dunamis dunamis, int amount, boolean simulate) {
+		if (!isDunamisValid(dunamis)) return false;
 		aspects.put(dunamis, Math.min(amount, getCapacity()));
 		return true;
 	}
 
 	@Override
-	public int getAspect(Dunamis dunamis) {
+	public int getDunamis(Dunamis dunamis) {
 		return aspects.get(dunamis) != null ? aspects.get(dunamis) : 0;
 	}
 
 	@Override
-	public boolean hasAspect(Dunamis dunamis) {
-		return getAspect(dunamis) > 0;
+	public boolean hasDunamis(Dunamis dunamis) {
+		return getDunamis(dunamis) > 0;
 	}
 
 	@Override
-	public DunamisStack[] getAspects() {
+	public DunamisStack[] getDunami() {
 		DunamisStack[] stacks = new DunamisStack[aspects.size()];
 		int i = 0;
 		for (Dunamis dunamis : aspects.keySet()) {
@@ -90,14 +90,14 @@ public class TileEntityNode extends TileEntity implements IAspectContainer {
 				regenRate = 0;
 				for (Dunamis dunamis : aspects.keySet()) {
 					int amount = aspects.get(dunamis);
-					if (amount > 0 && amount < 32) addAspect(new DunamisStack(dunamis, 1), false);
+					if (amount > 0 && amount < 32) addDunamis(new DunamisStack(dunamis, 1), false);
 				}
 			}
 
 			if (aspects.isEmpty()) {
 				for (Dunamis dunamis : Thaumaturgy.DUNAMI) {
 					if (worldObj.rand.nextInt(5) == 0) {
-						setAspect(new DunamisStack(dunamis, worldObj.rand.nextInt(4) + 1), false);
+						setDunamis(dunamis, worldObj.rand.nextInt(4) + 1, false);
 					}
 				}
 			}
@@ -111,7 +111,7 @@ public class TileEntityNode extends TileEntity implements IAspectContainer {
 					double randY = y + worldObj.rand.nextDouble();
 					double randZ = z + worldObj.rand.nextDouble();
 					for (int a = 0; a < Thaumaturgy.DUNAMI.size(); a++) {
-						if (hasAspect(Thaumaturgy.DUNAMI.get(a))) {
+						if (hasDunamis(Dunami.DUNAMI.get(a))) {
 							worldObj.spawnParticle(a < particles.length ? particles[a] : "flame", randX, randY, randZ, 0, 0, 0);
 						}
 					}
@@ -125,7 +125,7 @@ public class TileEntityNode extends TileEntity implements IAspectContainer {
 		super.writeToNBT(tag);
 		CompoundTag aspects = new CompoundTag();
 		for (Dunamis dunamis : this.aspects.keySet()) {
-			aspects.putInt(dunamis.getName(), getAspect(dunamis));
+			aspects.putInt(dunamis.getName(), getDunamis(dunamis));
 		}
 	}
 
@@ -135,7 +135,7 @@ public class TileEntityNode extends TileEntity implements IAspectContainer {
 		this.aspects.clear();
 		CompoundTag aspects = tag.getCompound("aspects");
 		for (Dunamis dunamis : Thaumaturgy.DUNAMI) {
-			setAspect(dunamis, aspects.getInteger(dunamis.getName()), false);
+			setDunamis(dunamis, aspects.getInteger(dunamis.getName()), false);
 		}
 	}
 }
