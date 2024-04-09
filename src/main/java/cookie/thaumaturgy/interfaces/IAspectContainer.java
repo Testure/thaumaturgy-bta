@@ -1,35 +1,35 @@
 package cookie.thaumaturgy.interfaces;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.api.Aspect;
-import cookie.thaumaturgy.api.AspectStack;
+import cookie.thaumaturgy.api.Dunamis;
+import cookie.thaumaturgy.api.DunamisStack;
 
 public interface IAspectContainer {
-	default int addAspect(AspectStack stack, boolean simulate) {
+	default int addAspect(DunamisStack stack, boolean simulate) {
 		return addAspect(stack.getAspect(), stack.amount, simulate);
 	}
 
-	int addAspect(Aspect aspect, int amount, boolean simulate);
+	int addAspect(Dunamis dunamis, int amount, boolean simulate);
 
-	int takeAspect(Aspect aspect, int amount, boolean simulate);
+	int takeAspect(Dunamis dunamis, int amount, boolean simulate);
 
-	default boolean setAspect(AspectStack stack, boolean simulate) {
+	default boolean setAspect(DunamisStack stack, boolean simulate) {
 		return setAspect(stack.getAspect(), stack.amount, simulate);
 	}
 
-	boolean setAspect(Aspect aspect, int amount, boolean simulate);
+	boolean setAspect(Dunamis dunamis, int amount, boolean simulate);
 
-	int getAspect(Aspect aspect);
+	int getAspect(Dunamis dunamis);
 
-	boolean hasAspect(Aspect aspect);
+	boolean hasAspect(Dunamis dunamis);
 
-	AspectStack[] getAspects();
+	DunamisStack[] getAspects();
 
 	default int getCapacity() {
 		return 8192;
 	}
 
-	default boolean isAspectValid(Aspect aspect) {
+	default boolean isAspectValid(Dunamis dunamis) {
 		return true;
 	}
 

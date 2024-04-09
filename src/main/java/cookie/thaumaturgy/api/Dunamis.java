@@ -4,20 +4,20 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Aspect {
+public class Dunamis {
 	protected final String name;
 	protected final int color;
 	protected final int texture;
-	protected final List<Aspect> composition;
+	protected final List<Dunamis> composition;
 
-	public Aspect(String name, int color, int texture, @Nullable List<Aspect> composition) {
+	public Dunamis(String name, int color, int texture, @Nullable List<Dunamis> composition) {
 		this.name = name;
 		this.color = color;
 		this.texture = texture;
 		this.composition = composition != null ? composition : new ArrayList<>();
 	}
 
-	public Aspect(String name, int color, int texture) {
+	public Dunamis(String name, int color, int texture) {
 		this(name, color, texture, null);
 	}
 
@@ -33,7 +33,7 @@ public class Aspect {
 		return texture;
 	}
 
-	public List<Aspect> getComposition() {
+	public List<Dunamis> getComposition() {
 		return composition;
 	}
 }
