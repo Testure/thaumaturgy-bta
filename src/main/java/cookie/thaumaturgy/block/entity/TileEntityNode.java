@@ -1,10 +1,7 @@
 package cookie.thaumaturgy.block.entity;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.api.Dunami;
-import cookie.thaumaturgy.api.Dunamis;
-import cookie.thaumaturgy.api.DunamisStack;
-import cookie.thaumaturgy.api.IDunamisContainer;
+import cookie.thaumaturgy.api.*;
 import net.minecraft.core.block.entity.TileEntity;
 
 import java.util.HashMap;
@@ -14,14 +11,6 @@ public class TileEntityNode extends TileEntity implements IDunamisContainer {
 	private int regenRate;
 	private int particleRate;
 	private final Map<Dunamis, Integer> dunami = new HashMap<>();
-	public static final String[] particles = new String[]{
-		"bubble",
-		"splash",
-		"explode",
-		"flame",
-		"bigsmoke",
-		"portal"
-	};
 
 	@Override
 	public int addDunamis(Dunamis dunamis, int amount, boolean simulate) {
@@ -116,12 +105,12 @@ public class TileEntityNode extends TileEntity implements IDunamisContainer {
 			if (particleRate++ >= 100) {
 				particleRate = 0;
 				for (int i = 0; i < 5; i++) {
-					double randX = x + worldObj.rand.nextDouble();
-					double randY = y + worldObj.rand.nextDouble();
-					double randZ = z + worldObj.rand.nextDouble();
-					for (int a = 0; a < Dunami.DUNAMI.size(); a++) {
-						if (hasDunamis(Dunami.DUNAMI.get(a))) {
-							worldObj.spawnParticle(a < particles.length ? particles[a] : "flame", randX, randY, randZ, 0, 0, 0);
+					for (Dunamis dunamis : this.dunami.keySet()) {
+						if (hasDunamis(dunamis)) {
+							double randX = x + worldObj.rand.nextDouble();
+							double randY = y + worldObj.rand.nextDouble();
+							double randZ = z + worldObj.rand.nextDouble();
+							worldObj.spawnParticle(ThaumaturgyAPI.getParticleForDunamis(dunamis), randX, randY, randZ, 0, 0, 0);
 						}
 					}
 				}

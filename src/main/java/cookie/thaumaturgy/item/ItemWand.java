@@ -63,7 +63,7 @@ public class ItemWand extends Item implements ICustomDescription {
 			for (int i = 0; i < Dunami.DUNAMI.size(); i++) {
 				Dunamis dunamis = Dunami.DUNAMI.get(i);
 				if (tileEntityNode.hasDunamis(dunamis)) {
-					String particle = i < TileEntityNode.particles.length ? TileEntityNode.particles[i] : "flame";
+					String particle = ThaumaturgyAPI.getParticleForDunamis(dunamis);
 					world.spawnParticle(particle, blockX, blockY, blockZ, 0, 0, 0);
 					int taken = tileEntityNode.takeDunamis(dunamis, 2, true);
 					if (taken > 0) {
