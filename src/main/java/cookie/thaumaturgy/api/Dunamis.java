@@ -36,4 +36,9 @@ public class Dunamis {
 	public List<Dunamis> getComposition() {
 		return composition;
 	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

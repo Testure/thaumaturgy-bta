@@ -1,12 +1,10 @@
-package cookie.thaumaturgy.interfaces;
+package cookie.thaumaturgy.api;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.api.Dunamis;
-import cookie.thaumaturgy.api.DunamisStack;
 
 public interface IDunamisContainer {
 	default int addDunamis(DunamisStack stack, boolean simulate) {
-		return addDunamis(stack.getAspect(), stack.amount, simulate);
+		return addDunamis(stack.getDunamis(), stack.amount, simulate);
 	}
 
 	int addDunamis(Dunamis dunamis, int amount, boolean simulate);
@@ -14,7 +12,7 @@ public interface IDunamisContainer {
 	int takeDunamis(Dunamis dunamis, int amount, boolean simulate);
 
 	default boolean takeDunamis(DunamisStack stack, boolean simulate) {
-		return setDunamis(stack.getAspect(), stack.amount, simulate);
+		return setDunamis(stack.getDunamis(), stack.amount, simulate);
 	}
 
 	boolean setDunamis(Dunamis dunamis, int amount, boolean simulate);
@@ -24,6 +22,8 @@ public interface IDunamisContainer {
 	boolean hasDunamis(Dunamis dunamis);
 
 	DunamisStack[] getDunami();
+
+	boolean isEmpty();
 
 	default int getCapacity() {
 		return 8192;
