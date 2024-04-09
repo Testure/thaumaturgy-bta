@@ -23,7 +23,7 @@ public class ItemThaumicReader extends Item {
 
 			if (tileEntityNode != null && player != null) {
 				for (DunamisStack stack : tileEntityNode.getDunami()) {
-					player.addChatMessage("Node " + stack.getAspect().getName() + ": " + stack.amount);
+					player.addChatMessage("Node " + stack.getDunamis().getName() + ": " + stack.amount);
 				}
 			}
 

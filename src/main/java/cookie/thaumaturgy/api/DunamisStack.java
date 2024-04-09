@@ -13,7 +13,7 @@ public class DunamisStack {
 		this(dunamis, 1);
 	}
 
-	public Dunamis getAspect() {
+	public Dunamis getDunamis() {
 		return dunamis;
 	}
 }

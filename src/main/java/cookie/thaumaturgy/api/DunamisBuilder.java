@@ -1,10 +1,8 @@
 package cookie.thaumaturgy.api;
 
-import cookie.thaumaturgy.Thaumaturgy;
-
 import java.util.List;
 
-public final class DunamisBuilder {
+public class DunamisBuilder {
 	private final String name;
 	private int color;
 	private int texture;

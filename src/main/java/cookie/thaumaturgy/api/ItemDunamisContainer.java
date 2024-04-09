@@ -1,16 +1,30 @@
-package cookie.thaumaturgy.block.entity;
+package cookie.thaumaturgy.api;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.api.*;
-import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TileEntityNode extends TileEntity implements IDunamisContainer {
-	private int regenRate;
-	private int particleRate;
+public class ItemDunamisContainer implements IDunamisContainer {
 	private final Map<Dunamis, Integer> dunami = new HashMap<>();
+	private final ItemStack item;
+
+	public ItemDunamisContainer(ItemStack stack) {
+		this.item = stack;
+		readFromNBT(stack.getData());
+	}
+
+	public ItemStack save() {
+		CompoundTag tag = this.item.getData();
+		writeToNBT(tag);
+		this.item.setData(tag);
+		return this.item;
+	}
+
+	public ItemStack getItemStack() {
+		return save();
+	}
 
 	@Override
 	public int addDunamis(Dunamis dunamis, int amount, boolean simulate) {
@@ -76,65 +90,22 @@ public class TileEntityNode extends TileEntity implements IDunamisContainer {
 		return stacks;
 	}
 
-	public TileEntityNode() {
-
-	}
-
-	@Override
-	public void tick() {
-		if (worldObj != null && !worldObj.isClientSide) {
-			// Regenerate the available mana if it's below 32 and above 0.
-			if (regenRate++ >= 200) {
-				regenRate = 0;
-				for (Dunamis dunamis : dunami.keySet()) {
-					int amount = dunami.get(dunamis);
-					if (amount > 0 && amount < 32) addDunamis(new DunamisStack(dunamis, 1), false);
-				}
-			}
-
-			if (dunami.isEmpty()) {
-				for (Dunamis dunamis : Dunami.DUNAMI) {
-					if (worldObj.rand.nextInt(5) == 0) {
-						setDunamis(dunamis, worldObj.rand.nextInt(4) + 1, false);
-					}
-				}
-			}
-
-			// TODO - find or create more particles!
-			// This spawns 5 of the corresponding particles for each mana type.
-			if (particleRate++ >= 100) {
-				particleRate = 0;
-				for (int i = 0; i < 5; i++) {
-					for (Dunamis dunamis : this.dunami.keySet()) {
-						if (hasDunamis(dunamis)) {
-							double randX = x + worldObj.rand.nextDouble();
-							double randY = y + worldObj.rand.nextDouble();
-							double randZ = z + worldObj.rand.nextDouble();
-							worldObj.spawnParticle(ThaumaturgyAPI.getParticleForDunamis(dunamis), randX, randY, randZ, 0, 0, 0);
-						}
-					}
-				}
-			}
-		}
-	}
-
 	@Override
 	public void writeToNBT(CompoundTag tag) {
-		super.writeToNBT(tag);
 		CompoundTag dunami = new CompoundTag();
 		for (Dunamis dunamis : this.dunami.keySet()) {
-			dunami.putInt(dunamis.getName(), getDunamis(dunamis));
+			dunami.putInt(dunamis.getName(), this.dunami.get(dunamis));
 		}
 		tag.put("dunami", dunami);
 	}
 
 	@Override
 	public void readFromNBT(CompoundTag tag) {
-		super.readFromNBT(tag);
-		this.dunami.clear();
-		CompoundTag aspects = tag.getCompound("dunami");
+		CompoundTag dunami = tag.getCompound("dunami");
 		for (Dunamis dunamis : Dunami.DUNAMI) {
-			setDunamis(dunamis, aspects.getInteger(dunamis.getName()), false);
+			if (dunami.containsKey(dunamis.getName())) {
+				setDunamis(dunamis, dunami.getInteger(dunamis.getName()), false);
+			}
 		}
 	}
 }

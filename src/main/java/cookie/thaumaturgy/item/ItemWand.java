@@ -1,11 +1,8 @@
 package cookie.thaumaturgy.item;
 
 import com.mojang.nbt.CompoundTag;
-import cookie.thaumaturgy.api.Dunami;
-import cookie.thaumaturgy.api.Dunamis;
-import cookie.thaumaturgy.api.DunamisStack;
+import cookie.thaumaturgy.api.*;
 import cookie.thaumaturgy.block.entity.TileEntityNode;
-import cookie.thaumaturgy.interfaces.IDunamisContainer;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.player.EntityPlayer;
@@ -16,11 +13,7 @@ import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import sunsetsatellite.catalyst.core.util.ICustomDescription;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class ItemWand extends Item implements ICustomDescription, IDunamisContainer {
-	private final Map<Dunamis, Integer> aspects = new HashMap<>();
+public class ItemWand extends Item implements ICustomDescription {
 
 	public ItemWand(String name, int id) {
 		super(name, id);
@@ -29,83 +22,9 @@ public class ItemWand extends Item implements ICustomDescription, IDunamisContai
 	}
 
 	@Override
-	public int addDunamis(Dunamis dunamis, int amount, boolean simulate) {
-		if (!isDunamisValid(dunamis)) return 0;
-		int current = getDunamis(dunamis);
-		if (current < getCapacity()) {
-			int result = Math.min(current + amount, getCapacity());
-			int diff = result - (current + amount);
-			int added = amount - diff;
-			if (!simulate) aspects.put(dunamis, result);
-			return added;
-		}
-		return 0;
-	}
-
-	@Override
-	public int takeDunamis(Dunamis dunamis, int amount, boolean simulate) {
-		if (!hasDunamis(dunamis)) return 0;
-		int current = getDunamis(dunamis);
-		if (current > 0) {
-			int result = Math.max(current - amount, 0);
-			int diff = result - (current - amount);
-			int removed = amount - diff;
-			if (!simulate) aspects.put(dunamis, result);
-			return removed;
-		}
-		return 0;
-	}
-
-	@Override
-	public boolean setDunamis(Dunamis dunamis, int amount, boolean simulate) {
-		if (!isDunamisValid(dunamis)) return false;
-		aspects.put(dunamis, Math.min(amount, getCapacity()));
-		return true;
-	}
-
-	@Override
-	public int getDunamis(Dunamis dunamis) {
-		return aspects.get(dunamis) != null ? aspects.get(dunamis) : 0;
-	}
-
-	@Override
-	public boolean hasDunamis(Dunamis dunamis) {
-		return getDunamis(dunamis) > 0;
-	}
-
-	@Override
-	public DunamisStack[] getDunami() {
-		DunamisStack[] stacks = new DunamisStack[aspects.size()];
-		int i = 0;
-		for (Dunamis dunamis : aspects.keySet()) {
-			stacks[i++] = new DunamisStack(dunamis, aspects.get(dunamis));
-		}
-		return stacks;
-	}
-
-	@Override
-	public void writeToNBT(CompoundTag tag) {
-		CompoundTag aspects = new CompoundTag();
-		for (Dunamis dunamis : this.aspects.keySet()) {
-			aspects.putInt(dunamis.getName(), this.aspects.get(dunamis));
-		}
-		tag.put("aspects", aspects);
-	}
-
-	@Override
-	public void readFromNBT(CompoundTag tag) {
-		CompoundTag aspects = tag.getCompound("aspects");
-		for (Dunamis dunamis : Dunami.DUNAMI) {
-			if (aspects.containsKey(dunamis.getName())) {
-				setDunamis(dunamis, aspects.getInteger(dunamis.getName()), false);
-			}
-		}
-	}
-
-	@Override
 	public CompoundTag getDefaultTag() {
 		CompoundTag tag = new CompoundTag();
-		tag.put("aspects", new CompoundTag());
+		tag.put("dunami", new CompoundTag());
 		return tag;
 	}
 
@@ -140,23 +59,23 @@ public class ItemWand extends Item implements ICustomDescription, IDunamisContai
 		// Check if the node and player aren't null. If it passes, lower the node count and raise the player's mana.
 		TileEntityNode tileEntityNode = (TileEntityNode) world.getBlockTileEntity(blockX, blockY, blockZ);
 		if (tileEntityNode != null && player != null) {
+			ItemDunamisContainer container = ThaumaturgyAPI.getItemDunamisContainer(itemstack);
 			for (int i = 0; i < Dunami.DUNAMI.size(); i++) {
 				Dunamis dunamis = Dunami.DUNAMI.get(i);
 				if (tileEntityNode.hasDunamis(dunamis)) {
-					String particle = i < TileEntityNode.particles.length ? TileEntityNode.particles[i] : "flame";
+					String particle = ThaumaturgyAPI.getParticleForDunamis(dunamis);
 					world.spawnParticle(particle, blockX, blockY, blockZ, 0, 0, 0);
-					int taken = tileEntityNode.takeDunamis(dunamis, 2, false);
+					int taken = tileEntityNode.takeDunamis(dunamis, 2, true);
 					if (taken > 0) {
-						int added = addDunamis(dunamis, taken, false);
-						if (added != taken) {
-							tileEntityNode.addDunamis(dunamis, taken - added, false);
+						int added = container.addDunamis(dunamis, taken, true);
+						if (added == taken) {
+							tileEntityNode.takeDunamis(dunamis, 2, false);
+							container.addDunamis(dunamis, taken, false);
 						}
 					}
 				}
 			}
-			CompoundTag data = itemstack.getData();
-			writeToNBT(data);
-			itemstack.setData(data);
+			container.save();
 			return true;
 		}
 		return false;
@@ -165,10 +84,9 @@ public class ItemWand extends Item implements ICustomDescription, IDunamisContai
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
 		if (player != null) {
-			CompoundTag aspects = itemstack.getData().getCompound("aspects");
-			for (Dunamis dunamis : Dunami.DUNAMI) {
-				int amount = aspects.getInteger(dunamis.getName());
-				player.addChatMessage("Aspect " + dunamis.getName() + ", Amount " + amount);
+			IDunamisContainer container = ThaumaturgyAPI.getItemDunamisContainer(itemstack);
+			for (DunamisStack stack : container.getDunami()) {
+				player.addChatMessage("Type: " + stack.getDunamis().getName() + " Amount: " + stack.amount);
 			}
 		}
 		return itemstack;
