@@ -95,7 +95,7 @@ public class ItemWand extends Item implements ICustomDescription, IDunamisContai
 	@Override
 	public void readFromNBT(CompoundTag tag) {
 		CompoundTag aspects = tag.getCompound("aspects");
-		for (Dunamis dunamis : Thaumaturgy.DUNAMI) {
+		for (Dunamis dunamis : Dunami.DUNAMI) {
 			if (aspects.containsKey(dunamis.getName())) {
 				setDunamis(dunamis, aspects.getInteger(dunamis.getName()), false);
 			}
@@ -140,8 +140,8 @@ public class ItemWand extends Item implements ICustomDescription, IDunamisContai
 		// Check if the node and player aren't null. If it passes, lower the node count and raise the player's mana.
 		TileEntityNode tileEntityNode = (TileEntityNode) world.getBlockTileEntity(blockX, blockY, blockZ);
 		if (tileEntityNode != null && player != null) {
-			for (int i = 0; i < Thaumaturgy.DUNAMI.size(); i++) {
-				Dunamis dunamis = Thaumaturgy.DUNAMI.get(i);
+			for (int i = 0; i < Dunami.DUNAMI.size(); i++) {
+				Dunamis dunamis = Dunami.DUNAMI.get(i);
 				if (tileEntityNode.hasDunamis(dunamis)) {
 					String particle = i < TileEntityNode.particles.length ? TileEntityNode.particles[i] : "flame";
 					world.spawnParticle(particle, blockX, blockY, blockZ, 0, 0, 0);
@@ -166,7 +166,7 @@ public class ItemWand extends Item implements ICustomDescription, IDunamisContai
 	public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer player) {
 		if (player != null) {
 			CompoundTag aspects = itemstack.getData().getCompound("aspects");
-			for (Dunamis dunamis : Thaumaturgy.DUNAMI) {
+			for (Dunamis dunamis : Dunami.DUNAMI) {
 				int amount = aspects.getInteger(dunamis.getName());
 				player.addChatMessage("Aspect " + dunamis.getName() + ", Amount " + amount);
 			}

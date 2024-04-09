@@ -95,7 +95,7 @@ public class TileEntityNode extends TileEntity implements IDunamisContainer {
 			}
 
 			if (aspects.isEmpty()) {
-				for (Dunamis dunamis : Thaumaturgy.DUNAMI) {
+				for (Dunamis dunamis : Dunami.DUNAMI) {
 					if (worldObj.rand.nextInt(5) == 0) {
 						setDunamis(dunamis, worldObj.rand.nextInt(4) + 1, false);
 					}
@@ -110,7 +110,7 @@ public class TileEntityNode extends TileEntity implements IDunamisContainer {
 					double randX = x + worldObj.rand.nextDouble();
 					double randY = y + worldObj.rand.nextDouble();
 					double randZ = z + worldObj.rand.nextDouble();
-					for (int a = 0; a < Thaumaturgy.DUNAMI.size(); a++) {
+					for (int a = 0; a < Dunami.DUNAMI.size(); a++) {
 						if (hasDunamis(Dunami.DUNAMI.get(a))) {
 							worldObj.spawnParticle(a < particles.length ? particles[a] : "flame", randX, randY, randZ, 0, 0, 0);
 						}
@@ -134,7 +134,7 @@ public class TileEntityNode extends TileEntity implements IDunamisContainer {
 		super.readFromNBT(tag);
 		this.aspects.clear();
 		CompoundTag aspects = tag.getCompound("aspects");
-		for (Dunamis dunamis : Thaumaturgy.DUNAMI) {
+		for (Dunamis dunamis : Dunami.DUNAMI) {
 			setDunamis(dunamis, aspects.getInteger(dunamis.getName()), false);
 		}
 	}

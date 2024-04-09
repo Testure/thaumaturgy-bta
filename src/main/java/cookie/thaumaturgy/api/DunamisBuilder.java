@@ -29,7 +29,9 @@ public final class DunamisBuilder {
 		return this;
 	}
 
-	public void build() {
-		Thaumaturgy.DUNAMI.add(new Dunamis(name, color, texture, composition));
+	public Dunamis build() {
+		Dunamis dunamis = new Dunamis(name, color, texture, composition);
+		Dunami.DUNAMI.add(dunamis);
+		return dunamis;
 	}
 }
